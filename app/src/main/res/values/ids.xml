@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--
+        Your Facebook App ID. See README.
+    -->
+    <!--  TODO(developer): REPLACE -->
+    <string name="facebook_app_id">441292919327895</string>
+
+    <!--
+      Your Twitter Key and Secret, see README.
+    -->
+    <!-- TODO(developer): REPLACE -->
+    <string name="twitter_consumer_key">jLbOYNY6XWnedRRlUILEJh3r3</string>
+    <string name="twitter_consumer_secret">vs4lPvPRDJuN0EayZysrGuu6bOtc1piyOd559K9X3kg2B4rAkR</string>
+</resources>
