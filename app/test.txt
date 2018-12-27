@@ -1,0 +1,52 @@
+
+유투브 api
+https://developers.google.com/youtube/v3/getting-started?hl=ko
+
+YOUR API KEY
+AIzaSyC_fxY1zxobTycOfblJ6i2wNBQzDBkxCVA
+
+https://cse.google.com/cse/setup/basic?cx=001948568840583219600%3Aaqlk929cd5k 
+
+
+https://developers.google.com/custom-search/v1/overview#Pricing
+
+https://developers.google.com/custom-search/v1/cse/list#request
+
+https://www.googleapis.com/customsearch/v1?key=AIzaSyC_fxY1zxobTycOfblJ6i2wNBQzDBkxCVA&cx=001948568840583219600:aqlk929cd5k&q=
+
+
+
+
+
+location
+I hope you have got the answer for this. If not then you need to add the type=video in query query or type=video,list but you need to add this. You can follow this 
+https://developers.google.com/apis-explorer/#s/youtube/v3/youtube.search.list?locationRadius=50km&order=date&part=snippet&location=37.42307%252C+-122.08427&type=video%252Clist&maxResults=10&_h=1&
+
+
+
+
+https://youtube-eng.googleblog.com/2014/08/find-videos-uploaded-from-any-location_26.html
+새로운 YouTube 위치 검색 기능과 Google지도 API
+http://youtube.github.io/geo-search-tool/search.html
+
+https://github.com/youtube/geo-search-tool
+
+
+youtube api georss
+https://developers.google.com/gdata/javadoc/com/google/gdata/data/youtube/VideoEntry
+
+https://developers.google.com/youtube/v3/docs/search/list?hl=ko&apix_params=%7B%22part%22%3A%22snippet%22%2C%22location%22%3A%2237.56641%2C126.98479%22%2C%22locationRadius%22%3A%2250km%22%2C%22maxResults%22%3A10%2C%22order%22%3A%22date%22%2C%22q%22%3A%22%EB%A7%9B%EC%A7%91%22%2C%22type%22%3A%22video%2Clist%22%7D#examples
+
+https://stackoverflow.com/questions/25972142/youtube-api-v3-search-videos-by-location
+
+
+I hope you have got the answer for this. If not then you need to add the type=video in query query or type=video,list but you need to add this. You can follow this https://developers.google.com/apis-explorer/#s/youtube/v3/youtube.search.list?locationRadius=50km&order=date&part=snippet&location=37.42307%252C+-122.08427&type=video%252Clist&maxResults=10&_h=1&
+
+
+===================================================
+
+
+
+
+채팅api
+https://sendbird.com/
