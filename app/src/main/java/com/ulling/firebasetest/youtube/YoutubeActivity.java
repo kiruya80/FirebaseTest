@@ -13,22 +13,23 @@
  */
 package com.ulling.firebasetest.youtube;
 
-import android.location.Location;
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.LinearLayoutManager;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
 
+import com.ulling.firebasetest.databinding.ActivityYoutubeBinding;
+import com.ulling.firebasetest.QUllingApplication;
 import com.ulling.firebasetest.R;
 import com.ulling.firebasetest.common.Define;
 import com.ulling.firebasetest.entites.SearchResponse;
 import com.ulling.firebasetest.entites.YoutubeItem;
 import com.ulling.firebasetest.network.RetrofitService;
+import com.ulling.firebasetest.view.adapter.YoutubeAdapter;
 import com.ulling.lib.core.listener.OnSingleClickListener;
+import com.ulling.lib.core.ui.QcBaseLifeActivity;
 import com.ulling.lib.core.util.QcLog;
+import com.ulling.lib.core.viewutil.adapter.QcRecyclerBaseAdapter;
 
 import java.util.List;
 
@@ -36,38 +37,77 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class YoutubeActivity extends AppCompatActivity {
+public class YoutubeActivity extends QcBaseLifeActivity {
 
-    private static final String TAG = "YoutubeActivity";
+    private QUllingApplication qApp;
+
     private static final String DEVELOPER_KEY = "AIzaSyC_fxY1zxobTycOfblJ6i2wNBQzDBkxCVA";
-
-    private EditText editText;
-    private TextView txtResult;
-    private RecyclerView recyclerView;
-    private Button btnYoutube;
 
 //    private Location location;
     private double latitude = 37.566120; // 위도
     private double longitude = 126.982540; // 경도
 
+    private YoutubeAdapter adapter;
+
+
     String result = "";
+    private ActivityYoutubeBinding viewBinding;
+    private List<YoutubeItem> items;
+    private LinearLayoutManager mLinearLayoutManager;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_youtube);
+    protected int needGetLayoutId() {
+        return R.layout.activity_youtube;
+    }
 
-        editText = (EditText) findViewById(R.id.editText);
-        txtResult = (TextView) findViewById(R.id.txtResult);
-        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        btnYoutube = (Button) findViewById(R.id.btnYoutube);
+    @Override
+    protected void needInitToOnCreate() {
+        qApp = QUllingApplication.getInstance();
+        APP_NAME = QUllingApplication.getAppName();
+
+        mLinearLayoutManager = new LinearLayoutManager(qCon);
+        adapter = new YoutubeAdapter(this, null);
+    }
+
+    @Override
+    protected void optGetSavedInstanceState(Bundle savedInstanceState) {
+
+    }
+
+    @Override
+    protected void optGetIntent(Intent intent) {
+
+    }
+
+    @Override
+    protected void needResetData() {
+
+    }
+
+    @Override
+    protected void needUIBinding() {
+        viewBinding = (ActivityYoutubeBinding) getViewDataBinding();
+
+        viewBinding.recyclerView.setAdapter(adapter);
+        viewBinding.recyclerView.setHasFixedSize(true);
+        viewBinding.recyclerView.setNestedScrollingEnabled(false);
+
+//        int valueInPixels = (int) getResources().getDimension(R.dimen.p20);
+//        CustomRecyclerDecoration mCustomRecyclerDecoration = new CustomRecyclerDecoration(valueInPixels);
+//        viewBinding.includeDetailDoodle.recyclerView.addItemDecoration(mCustomRecyclerDecoration);
+
+        viewBinding.recyclerView.setLayoutManager(mLinearLayoutManager);
+    }
+
+    @Override
+    protected void needUIEventListener() {
 
         // 37.566120, 126.982540 - 을지로역
-        btnYoutube.setOnClickListener(new OnSingleClickListener() {
+        viewBinding.btnYoutube.setOnClickListener(new OnSingleClickListener() {
             @Override
             public void onSingleClick(View v) {
                 result = "";
-                txtResult.setText(result);
+                viewBinding.txtResult.setText(result);
 
                 getSearchList("snippet",
                         latitude + "," + longitude,
@@ -75,10 +115,33 @@ public class YoutubeActivity extends AppCompatActivity {
                         "25",
                         "date",
                         "video,list",
-                        editText.getText().toString());
+                        viewBinding.editText.getText().toString());
             }
         });
+
     }
+
+    @Override
+    protected void needSubscribeUiFromViewModel() {
+
+    }
+
+    @Override
+    protected void needSubscribeUiClear() {
+
+    }
+
+    @Override
+    protected void needOnShowToUser() {
+
+    }
+
+//    @Override
+//    protected void onCreate(Bundle savedInstanceState) {
+//        super.onCreate(savedInstanceState);
+//        setContentView(R.layout.activity_youtube);
+//
+//    }
 
 
     public void getSearchList(String part,
@@ -106,19 +169,21 @@ public class YoutubeActivity extends AppCompatActivity {
                     SearchResponse mSearchResponse = response.body();
 
                     if (mSearchResponse != null) {
-                        List<YoutubeItem> items = mSearchResponse.getItems();
+                       items = mSearchResponse.getItems();
                         for (int i = 0; i < items.size(); i++) {
                             QcLog.e("items = " + items.get(i).getSnippet().getTitle());
                             result = result + "\n\n" + items.get(i).getSnippet().getTitle();
                         }
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+//                            viewBinding.txtResult.setText(result);
+                                    adapter.addAll(items);
+                            }
+                        });
                     }
 
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            txtResult.setText(result);
-                        }
-                    });
                 } else {
                     QcLog.e("onResponse === false");
                 }

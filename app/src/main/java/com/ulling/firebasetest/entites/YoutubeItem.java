@@ -2,8 +2,9 @@ package com.ulling.firebasetest.entites;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.ulling.lib.core.entities.QcBaseItem;
 
-public class YoutubeItem {
+public class YoutubeItem extends QcBaseItem  {
     @SerializedName("kind")
     @Expose
     private String kind;

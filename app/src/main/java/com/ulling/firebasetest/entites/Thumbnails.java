@@ -13,11 +13,11 @@ public class Thumbnails {
     @SerializedName("high")
     private ThumbnailData high;
 
-    public ThumbnailData get_default() {
+    public ThumbnailData getDefault() {
         return _default;
     }
 
-    public void set_default(ThumbnailData _default) {
+    public void setDefault(ThumbnailData _default) {
         this._default = _default;
     }
 

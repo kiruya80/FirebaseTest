@@ -425,6 +425,14 @@ public abstract class QcRecyclerBaseAdapter<T> extends RecyclerView.Adapter<QcBa
         needResetData();
     }
 
+    public QcRecyclerBaseAdapter(QcBaseLifeActivity qQcBaseLifeActivity, QcRecyclerItemListener qcRecyclerItemListener) {
+        super();
+        this.qQcBaseLifeActivity = qQcBaseLifeActivity;
+        this.qCon = qQcBaseLifeActivity.getBaseContext();
+        this.qcRecyclerItemListener = qcRecyclerItemListener;
+        needInitToOnCreate();
+        needResetData();
+    }
     public QcRecyclerBaseAdapter(Fragment fragment) {
         super();
         this.fragment = fragment;
