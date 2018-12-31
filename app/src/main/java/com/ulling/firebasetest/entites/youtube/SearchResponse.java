@@ -1,4 +1,4 @@
-package com.ulling.firebasetest.entites;
+package com.ulling.firebasetest.entites.youtube;
 
 import com.google.gson.annotations.SerializedName;
 

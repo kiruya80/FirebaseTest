@@ -22,14 +22,13 @@ import com.ulling.firebasetest.databinding.ActivityYoutubeBinding;
 import com.ulling.firebasetest.QUllingApplication;
 import com.ulling.firebasetest.R;
 import com.ulling.firebasetest.common.Define;
-import com.ulling.firebasetest.entites.SearchResponse;
-import com.ulling.firebasetest.entites.YoutubeItem;
+import com.ulling.firebasetest.entites.youtube.SearchResponse;
+import com.ulling.firebasetest.entites.youtube.YoutubeItem;
 import com.ulling.firebasetest.network.RetrofitService;
 import com.ulling.firebasetest.view.adapter.YoutubeAdapter;
 import com.ulling.lib.core.listener.OnSingleClickListener;
 import com.ulling.lib.core.ui.QcBaseLifeActivity;
 import com.ulling.lib.core.util.QcLog;
-import com.ulling.lib.core.viewutil.adapter.QcRecyclerBaseAdapter;
 
 import java.util.List;
 
@@ -38,22 +37,20 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class YoutubeActivity extends QcBaseLifeActivity {
-
-    private QUllingApplication qApp;
-
     private static final String DEVELOPER_KEY = "AIzaSyC_fxY1zxobTycOfblJ6i2wNBQzDBkxCVA";
 
-//    private Location location;
+    private QUllingApplication qApp;
+    private ActivityYoutubeBinding viewBinding;
+    private LinearLayoutManager mLinearLayoutManager;
+    private YoutubeAdapter adapter;
+
+    //    private Location location;
     private double latitude = 37.566120; // 위도
     private double longitude = 126.982540; // 경도
 
-    private YoutubeAdapter adapter;
-
-
-    String result = "";
-    private ActivityYoutubeBinding viewBinding;
     private List<YoutubeItem> items;
-    private LinearLayoutManager mLinearLayoutManager;
+
+    private String result = "";
 
     @Override
     protected int needGetLayoutId() {
@@ -169,7 +166,7 @@ public class YoutubeActivity extends QcBaseLifeActivity {
                     SearchResponse mSearchResponse = response.body();
 
                     if (mSearchResponse != null) {
-                       items = mSearchResponse.getItems();
+                        items = mSearchResponse.getItems();
                         for (int i = 0; i < items.size(); i++) {
                             QcLog.e("items = " + items.get(i).getSnippet().getTitle());
                             result = result + "\n\n" + items.get(i).getSnippet().getTitle();
@@ -179,7 +176,7 @@ public class YoutubeActivity extends QcBaseLifeActivity {
                             @Override
                             public void run() {
 //                            viewBinding.txtResult.setText(result);
-                                    adapter.addAll(items);
+                                adapter.addAll(items);
                             }
                         });
                     }

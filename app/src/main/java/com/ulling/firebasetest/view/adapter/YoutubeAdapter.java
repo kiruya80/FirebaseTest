@@ -3,7 +3,7 @@ package com.ulling.firebasetest.view.adapter;
 import com.squareup.picasso.Picasso;
 import com.ulling.firebasetest.R;
 import com.ulling.firebasetest.common.Define;
-import com.ulling.firebasetest.entites.YoutubeItem;
+import com.ulling.firebasetest.entites.youtube.YoutubeItem;
 import com.ulling.lib.core.ui.QcBaseLifeActivity;
 import com.ulling.lib.core.util.QcLog;
 import com.ulling.lib.core.viewutil.adapter.QcBaseViewHolder;

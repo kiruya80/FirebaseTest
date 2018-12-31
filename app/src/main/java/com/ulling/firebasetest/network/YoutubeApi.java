@@ -1,11 +1,9 @@
 package com.ulling.firebasetest.network;
 
-import com.ulling.firebasetest.entites.SearchResponse;
+import com.ulling.firebasetest.entites.youtube.SearchResponse;
 
 import retrofit2.Call;
-import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
-import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 
