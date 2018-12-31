@@ -29,4 +29,6 @@ public class Define extends QcDefine {
     public static final String dateFormatFrom = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
     public static final int JSOUP_TIMEOUT = 30000;
+
+    public static final String KEYWORD = "KEYWORD";
 }

@@ -29,6 +29,7 @@ import com.ulling.firebasetest.view.adapter.YoutubeAdapter;
 import com.ulling.lib.core.listener.OnSingleClickListener;
 import com.ulling.lib.core.ui.QcBaseLifeActivity;
 import com.ulling.lib.core.util.QcLog;
+import com.ulling.lib.core.util.QcToast;
 import com.ulling.lib.core.util.QcUtil;
 
 import java.util.List;
@@ -51,6 +52,7 @@ public class YoutubeActivity extends QcBaseLifeActivity {
     private List<YoutubeItem> items;
 
     private String result = "";
+    private String keyword;
 
     @Override
     protected int needGetLayoutId() {
@@ -73,7 +75,7 @@ public class YoutubeActivity extends QcBaseLifeActivity {
 
     @Override
     protected void optGetIntent(Intent intent) {
-
+        keyword = intent.getStringExtra(Define.KEYWORD);
     }
 
     @Override
@@ -103,18 +105,7 @@ public class YoutubeActivity extends QcBaseLifeActivity {
         viewBinding.btnYoutube.setOnClickListener(new OnSingleClickListener() {
             @Override
             public void onSingleClick(View v) {
-                result = "";
-                viewBinding.txtResult.setText(result);
-                QcUtil.hiddenSoftKey(qCon, viewBinding.editText);
-                viewBinding.llProgressBar.setVisibility(View.VISIBLE);
-
-                getSearchList("snippet",
-                        latitude + "," + longitude,
-                        "5km",
-                        "25",
-                        "date",
-                        "video,list",
-                        viewBinding.editText.getText().toString());
+                searchKeyword();
             }
         });
 
@@ -133,24 +124,83 @@ public class YoutubeActivity extends QcBaseLifeActivity {
     @Override
     protected void needOnShowToUser() {
         viewBinding.llProgressBar.setVisibility(View.GONE);
+        if (keyword != null && !"".equals(keyword)) {
+            viewBinding.editText.setText(keyword);
+            searchKeyword();
+        }
     }
 
-    public void getSearchList(String part,
-                              String location,
-                              String locationRadius,
-                              String maxResults,
-                              String order,
-                              String type,
-                              String q) {
+
+    @Override
+    public void onBackPressed() {
+        finish();
+        overridePendingTransition(R.anim.hold, R.anim.slide_out_right);
+    }
+
+    private void searchKeyword() {
+        if (!"".equals(viewBinding.editText.getText().toString())) {
+            result = "";
+            QcUtil.hiddenSoftKey(qCon, viewBinding.editText);
+            viewBinding.llProgressBar.setVisibility(View.VISIBLE);
+//            getSearchList("snippet",
+//                    latitude + "," + longitude,
+//                    "5km",
+//                    50,
+//                    "date",
+//                    "video,list",
+//                    viewBinding.editText.getText().toString());
+
+            Call<SearchResponse> call = getSearch("snippet",
+                    "",
+                    "",
+                    50,
+                    "date",
+                    "video,list",
+                    viewBinding.editText.getText().toString());
+            getSearchList(call);
+        }
+    }
+
+    public Call<SearchResponse> getSearch(String part,
+                                          String location,
+                                          String locationRadius,
+                                          int maxResults,
+                                          String order,
+                                          String type,
+                                          String q) {
+        QcLog.e("getSearch ===  ");
+        Call<SearchResponse> call = null;
+
+        if (location != null && !"".equals(location)
+                && location != null && !"".equals(location)) {
+            call = RetrofitService.getInstance().getSearchList(Define.YOUTUBE_API_KEY,
+                    part,
+                    location,
+                    locationRadius,
+                    maxResults,
+                    order,
+                    type,
+                    q);
+
+        } else {
+            call = RetrofitService.getInstance().getSearchList(Define.YOUTUBE_API_KEY,
+                    part,
+                    maxResults,
+                    order,
+                    type,
+                    q);
+        }
+
+        return call;
+    }
+
+    public void getSearchList(Call<SearchResponse> call) {
         QcLog.e("getSearchList ===  ");
-        Call<SearchResponse> call = RetrofitService.getInstance().getSearchList(Define.YOUTUBE_API_KEY,
-                part,
-                location,
-                locationRadius,
-                maxResults,
-                order,
-                type,
-                q);
+        if (call == null) {
+            viewBinding.llProgressBar.setVisibility(View.GONE);
+            return;
+        }
+
         call.enqueue(new Callback<SearchResponse>() {
             @Override
             public void onResponse(Call<SearchResponse> call, Response<SearchResponse> response) {
@@ -169,7 +219,6 @@ public class YoutubeActivity extends QcBaseLifeActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-//                            viewBinding.txtResult.setText(result);
                                 adapter.addAll(items);
                                 viewBinding.llProgressBar.setVisibility(View.GONE);
                             }
@@ -178,13 +227,28 @@ public class YoutubeActivity extends QcBaseLifeActivity {
 
                 } else {
                     QcLog.e("onResponse === false");
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            QcToast.getInstance().show("Load Failed", false);
+                            viewBinding.llProgressBar.setVisibility(View.GONE);
+                        }
+                    });
                 }
             }
 
             @Override
             public void onFailure(Call<SearchResponse> call, Throwable t) {
                 QcLog.e("onFailure error loading from API == " + t.toString() + " , " + t.getMessage());
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        QcToast.getInstance().show("Load Failed", false);
+                        viewBinding.llProgressBar.setVisibility(View.GONE);
+                    }
+                });
             }
         });
     }
+
 }

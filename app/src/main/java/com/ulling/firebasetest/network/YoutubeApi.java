@@ -24,7 +24,12 @@ public interface YoutubeApi {
     // GET https://www.googleapis.com/youtube/v3/search?part=snippet&location=37.42307%2C+-122.08427&locationRadius=50km&maxResults=10&order=date&type=video%2Clist&key={YOUR_API_KEY}
     @GET("search")
     Call<SearchResponse> getSearchList(@Query("key") String apiKey, @Query("part") String part, @Query("location") String location,
-                                       @Query("locationRadius") String locationRadius, @Query("maxResults") String maxResults, @Query("order") String order,
+                                       @Query("locationRadius") String locationRadius, @Query("maxResults") int maxResults, @Query("order") String order,
+                                       @Query("type") String type, @Query("q") String q);
+
+    @GET("search")
+    Call<SearchResponse> getSearchList(@Query("key") String apiKey, @Query("part") String part,
+                                     @Query("maxResults") int maxResults, @Query("order") String order,
                                        @Query("type") String type, @Query("q") String q);
 
 }

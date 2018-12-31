@@ -65,6 +65,7 @@ public class InstagramActivity extends QcBaseLifeActivity {
 
     private String htmlContentInStringFormat = "";
     private ArrayList<Node> nodeList = new ArrayList<>();
+    private String keyword;
 
     @Override
     protected int needGetLayoutId() {
@@ -87,7 +88,7 @@ public class InstagramActivity extends QcBaseLifeActivity {
 
     @Override
     protected void optGetIntent(Intent intent) {
-
+        keyword = intent.getStringExtra(Define.KEYWORD);
     }
 
     @Override
@@ -111,13 +112,7 @@ public class InstagramActivity extends QcBaseLifeActivity {
         viewBinding.btnYoutube.setOnClickListener(new OnSingleClickListener() {
             @Override
             public void onSingleClick(View v) {
-                QcUtil.hiddenSoftKey(qCon, viewBinding.editText);
-                viewBinding.llProgressBar.setVisibility(View.VISIBLE);
-                if (!"".equals(viewBinding.editText.getText().toString())) {
-                    new InstagramJsoupAsyncTask(viewBinding.editText.getText().toString()).execute();
-//                new JsoupAsyncTask().execute();
-//                new NaverJsoupAsyncTask().execute();
-                }
+                searchKeyword();
             }
         });
     }
@@ -135,6 +130,24 @@ public class InstagramActivity extends QcBaseLifeActivity {
     @Override
     protected void needOnShowToUser() {
         viewBinding.llProgressBar.setVisibility(View.GONE);
+        if (keyword != null && !"".equals(keyword)) {
+            viewBinding.editText.setText(keyword);
+            searchKeyword();
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
+        overridePendingTransition(R.anim.hold, R.anim.slide_out_right);
+    }
+
+    private void searchKeyword() {
+        if (!"".equals(viewBinding.editText.getText().toString())) {
+            QcUtil.hiddenSoftKey(qCon, viewBinding.editText);
+            viewBinding.llProgressBar.setVisibility(View.VISIBLE);
+            new InstagramJsoupAsyncTask(viewBinding.editText.getText().toString()).execute();
+        }
     }
 
     /**
@@ -278,47 +291,4 @@ public class InstagramActivity extends QcBaseLifeActivity {
             viewBinding.txtResult.setText(htmlContentInStringFormat);
         }
     }
-
-    /**
-     * 네이버 실시간 순위 파싱
-     * <p>
-     * http://someoneofsunrin.tistory.com/42
-     */
-    private class NaverJsoupAsyncTask extends AsyncTask<Void, Void, Void> {
-        Document doc;
-        Elements contents;
-        String Top10;
-        private String htmlPageUrl = "https://www.naver.com/"; //파싱할 홈페이지의 URL주소
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            try {
-                doc = Jsoup.connect(htmlPageUrl).timeout(Define.JSOUP_TIMEOUT).get(); //naver페이지를 불러옴
-                contents = doc.select("span.ah_k");//셀렉터로 span태그중 class값이 ah_k인 내용을 가져옴
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            Top10 = "";
-            int cnt = 0;//숫자를 세기위한 변수
-            for (Element element : contents) {
-                cnt++;
-                Top10 += cnt + ". " + element.text() + "\n";
-                if (cnt == 10)//10위까지 파싱하므로
-                    break;
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-            viewBinding.txtResult.setText(Top10);
-        }
-    }
-
-
 }

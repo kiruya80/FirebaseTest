@@ -3,7 +3,7 @@ package com.ulling.firebasetest;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
 
 import com.ulling.firebasetest.common.Define;
@@ -26,11 +26,13 @@ import java.util.ArrayList;
 public class IntroActivity extends QcBaseLifeActivity {
     private QUllingApplication qApp;
     private ActivityIntroBinding viewBinding;
-    private LinearLayoutManager mLinearLayoutManager;
+    private StaggeredGridLayoutManager mStaggeredGridLayoutManager;
+    private int spanCount = 2;
 
     private NaverRankingAdapter adapter;
 
     private ArrayList<NaverRanking> naverRanking = new ArrayList<NaverRanking>();
+    private int naverRankingCnt = 20;
 
     @Override
     protected int needGetLayoutId() {
@@ -42,7 +44,8 @@ public class IntroActivity extends QcBaseLifeActivity {
         qApp = QUllingApplication.getInstance();
         APP_NAME = QUllingApplication.getAppName();
 
-        mLinearLayoutManager = new LinearLayoutManager(qCon);
+        mStaggeredGridLayoutManager = new StaggeredGridLayoutManager(spanCount, StaggeredGridLayoutManager.VERTICAL);
+
         adapter = new NaverRankingAdapter(this, null);
     }
 
@@ -66,7 +69,7 @@ public class IntroActivity extends QcBaseLifeActivity {
         viewBinding.recyclerView.setHasFixedSize(true);
         viewBinding.recyclerView.setNestedScrollingEnabled(false);
 
-        viewBinding.recyclerView.setLayoutManager(mLinearLayoutManager);
+        viewBinding.recyclerView.setLayoutManager(mStaggeredGridLayoutManager);
     }
 
     @Override
@@ -97,7 +100,7 @@ public class IntroActivity extends QcBaseLifeActivity {
     protected void needOnShowToUser() {
         naverRanking = new ArrayList<NaverRanking>();
         adapter.addAll(naverRanking);
-        new NaverTopJsoupAsyncTask(10).execute();
+        new NaverTopJsoupAsyncTask(naverRankingCnt).execute();
     }
 
 

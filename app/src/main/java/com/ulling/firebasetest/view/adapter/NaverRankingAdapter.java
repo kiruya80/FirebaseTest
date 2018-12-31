@@ -5,6 +5,7 @@ import android.view.View;
 import com.ulling.firebasetest.R;
 import com.ulling.firebasetest.databinding.RowNaverRankingBinding;
 import com.ulling.firebasetest.entites.naver.NaverRanking;
+import com.ulling.firebasetest.utils.MoveActivityUtils;
 import com.ulling.lib.core.listener.OnSingleClickListener;
 import com.ulling.lib.core.ui.QcBaseLifeActivity;
 import com.ulling.lib.core.util.QcLog;
@@ -54,6 +55,11 @@ public class NaverRankingAdapter extends QcRecyclerBaseAdapter<NaverRanking> {
                 NaverRanking selectecItem = (NaverRanking) needItemFromPosition(position_);
                 QcLog.e("CLick ==== " + selectecItem.toString());
                 QcToast.getInstance().show(selectecItem.toString(), false);
+                if (position_ % 2 == 0) {
+                    MoveActivityUtils.moveYoutubeActivity(qQcBaseLifeActivity, selectecItem.getKeyword());
+                } else {
+                    MoveActivityUtils.moveInstagramActivity(qQcBaseLifeActivity, selectecItem.getKeyword());
+                }
             }
         });
     }
