@@ -56,7 +56,6 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation project(path: ':ullinglibcore')
     implementation files('libs/YouTubeAndroidPlayerApi.jar')
-    implementation files('libs/jsoup-1.11.3.jar')
 
     implementation 'com.android.support:appcompat-v7:28.0.0'
     implementation 'com.android.support:design:28.0.0'
@@ -83,7 +82,7 @@ dependencies {
     // Used in FacebookLoginActivity. This is only compiled into the minSdkJellybean variant of this
     // app. You can build a 'minSdkGingerbread' variant to test on devices with 9 <= SDK <= 15.
     //    minSdkJellybeanCompile 'com.facebook.android:facebook-android-sdk:4.9.0'
-    implementation 'com.facebook.android:facebook-android-sdk:4.17.0'
+    implementation 'com.facebook.android:facebook-android-sdk:4.31.0'
     // Twitter Android SDK (only required for Twitter Login)
     implementation('com.twitter.sdk.android:twitter-core:1.7.0@aar') {
         transitive = true;
@@ -104,7 +103,7 @@ dependencies {
 
     implementation 'com.squareup.picasso:picasso:2.71828'
 
-//    implementation 'org.jsoup:jsoup:1.11.3'
+    implementation 'org.jsoup:jsoup:1.11.3'
 }
 // ADD THIS AT THE BOTTOM
 apply plugin: 'com.google.gms.google-services'

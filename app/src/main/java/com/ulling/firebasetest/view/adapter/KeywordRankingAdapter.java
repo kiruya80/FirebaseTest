@@ -3,7 +3,8 @@ package com.ulling.firebasetest.view.adapter;
 import android.view.View;
 
 import com.ulling.firebasetest.R;
-import com.ulling.firebasetest.databinding.RowNaverRankingBinding;
+import com.ulling.firebasetest.databinding.RowKeywordRankingBinding;
+import com.ulling.firebasetest.entites.KeywordRanking;
 import com.ulling.firebasetest.entites.naver.NaverRanking;
 import com.ulling.firebasetest.utils.MoveActivityUtils;
 import com.ulling.lib.core.listener.OnSingleClickListener;
@@ -18,9 +19,9 @@ import java.util.ArrayList;
 /**
  *
  */
-public class NaverRankingAdapter extends QcRecyclerBaseAdapter<NaverRanking> {
+public class KeywordRankingAdapter extends QcRecyclerBaseAdapter<KeywordRanking> {
 
-    public NaverRankingAdapter(QcBaseLifeActivity qQcBaseLifeActivity, QcRecyclerItemListener qcRecyclerItemListener) {
+    public KeywordRankingAdapter(QcBaseLifeActivity qQcBaseLifeActivity, QcRecyclerItemListener qcRecyclerItemListener) {
         super(qQcBaseLifeActivity, qcRecyclerItemListener);
     }
 
@@ -37,13 +38,13 @@ public class NaverRankingAdapter extends QcRecyclerBaseAdapter<NaverRanking> {
 
     @Override
     protected int needLayoutIdFromItemViewType(int position) {
-        return R.layout.row_naver_ranking;
+        return R.layout.row_keyword_ranking;
     }
 
     @Override
     protected void needUIBinding(QcBaseViewHolder holder, int position, Object object) {
-        NaverRanking item = (NaverRanking) object;
-        RowNaverRankingBinding hoderBinding = (RowNaverRankingBinding) holder.getBinding();
+        KeywordRanking item = (KeywordRanking) object;
+        RowKeywordRankingBinding hoderBinding = (RowKeywordRankingBinding) holder.getBinding();
 
         hoderBinding.tvTitle.setText(item.getRanking() + ".  " + item.getKeyword());
 
@@ -52,7 +53,7 @@ public class NaverRankingAdapter extends QcRecyclerBaseAdapter<NaverRanking> {
             @Override
             public void onSingleClick(View v) {
                 int position_ = (int) v.getTag();
-                NaverRanking selectecItem = (NaverRanking) needItemFromPosition(position_);
+                KeywordRanking selectecItem = (KeywordRanking) needItemFromPosition(position_);
                 QcLog.e("CLick ==== " + selectecItem.toString());
                 QcToast.getInstance().show(selectecItem.toString(), false);
                 if (position_ % 2 == 0) {
