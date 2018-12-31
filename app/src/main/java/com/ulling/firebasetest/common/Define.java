@@ -17,6 +17,8 @@ public class Define extends QcDefine {
      */
 //    public static final boolean DEBUG_FLAG = true;
 
+    public static final String YOUTUBE_API_KEY = "AIzaSyC_fxY1zxobTycOfblJ6i2wNBQzDBkxCVA";
+
     public static final int PAGE_SIZE = 20;
 
     /**
@@ -25,6 +27,6 @@ public class Define extends QcDefine {
     public static final int INTRO_TIMEOUT = 1500;
 
     public static final String dateFormatFrom = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
-    public static final String YOUTUBE_API_KEY = "AIzaSyC_fxY1zxobTycOfblJ6i2wNBQzDBkxCVA";
 
+    public static final int JSOUP_TIMEOUT = 30000;
 }

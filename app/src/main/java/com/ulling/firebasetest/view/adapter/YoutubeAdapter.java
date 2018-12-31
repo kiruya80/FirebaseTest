@@ -1,11 +1,15 @@
 package com.ulling.firebasetest.view.adapter;
 
+import android.view.View;
+
 import com.squareup.picasso.Picasso;
 import com.ulling.firebasetest.R;
 import com.ulling.firebasetest.common.Define;
 import com.ulling.firebasetest.entites.youtube.YoutubeItem;
+import com.ulling.lib.core.listener.OnSingleClickListener;
 import com.ulling.lib.core.ui.QcBaseLifeActivity;
 import com.ulling.lib.core.util.QcLog;
+import com.ulling.lib.core.util.QcToast;
 import com.ulling.lib.core.viewutil.adapter.QcBaseViewHolder;
 import com.ulling.lib.core.viewutil.adapter.QcRecyclerBaseAdapter;
 
@@ -71,7 +75,16 @@ public class YoutubeAdapter extends QcRecyclerBaseAdapter<YoutubeItem> {
 //        if (item.getTimestamp() > 0) {
 //            hoderBinding.tvTime.setText("Time : " + simpleDate.format(item.getTimestamp()));
 //        }
-
+        hoderBinding.root.setTag(position);
+        hoderBinding.root.setOnClickListener(new OnSingleClickListener() {
+            @Override
+            public void onSingleClick(View v) {
+                int position_ = (int) v.getTag();
+                YoutubeItem selectecItem = (YoutubeItem) needItemFromPosition(position_);
+                QcLog.e("CLick ==== " + selectecItem.toString());
+                QcToast.getInstance().show(selectecItem.toString(), false);
+            }
+        });
     }
 
     @Override

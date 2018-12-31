@@ -21,6 +21,7 @@ import android.view.View;
 
 import com.ulling.firebasetest.QUllingApplication;
 import com.ulling.firebasetest.R;
+import com.ulling.firebasetest.common.Define;
 import com.ulling.firebasetest.databinding.ActivityInstagramBinding;
 import com.ulling.firebasetest.entites.instagram.Edge;
 import com.ulling.firebasetest.entites.instagram.EdgeHashtagToMedia;
@@ -29,12 +30,12 @@ import com.ulling.firebasetest.entites.instagram.Edge__;
 import com.ulling.firebasetest.entites.instagram.Hashtag;
 import com.ulling.firebasetest.entites.instagram.Node;
 import com.ulling.firebasetest.entites.instagram.SharedData;
-import com.ulling.firebasetest.entites.youtube.YoutubeItem;
 import com.ulling.firebasetest.view.adapter.InstagramAdapter;
 import com.ulling.lib.core.listener.OnSingleClickListener;
 import com.ulling.lib.core.ui.QcBaseLifeActivity;
 import com.ulling.lib.core.util.QcGsonUtil;
 import com.ulling.lib.core.util.QcLog;
+import com.ulling.lib.core.util.QcUtil;
 
 import org.jsoup.nodes.DataNode;
 import org.jsoup.nodes.Document;
@@ -43,8 +44,12 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * https://developers.facebook.com/docs/instagram-api/hashtag-search
+ */
 public class InstagramActivity extends QcBaseLifeActivity {
 
     private QUllingApplication qApp;
@@ -52,19 +57,14 @@ public class InstagramActivity extends QcBaseLifeActivity {
     private LinearLayoutManager mLinearLayoutManager;
 
     private InstagramAdapter adapter;
-    private String result = "";
-    private List<YoutubeItem> items;
-
 
     private String htmlPageUrl = "http://www.yonhapnews.co.kr/"; //파싱할 홈페이지의 URL주소
-
 
     // https://www.instagram.com/explore/tags/을지로/?__a=1%22;
     private String INSTAGRAM_URL = "https://www.instagram.com/explore/tags/%EC%9D%84%EC%A7%80%EB%A1%9C/?__a=1%22;"; //파싱할 홈페이지의 URL주소
 
     private String htmlContentInStringFormat = "";
-    private int cnt = 0;
-
+    private ArrayList<Node> nodeList = new ArrayList<>();
 
     @Override
     protected int needGetLayoutId() {
@@ -92,7 +92,7 @@ public class InstagramActivity extends QcBaseLifeActivity {
 
     @Override
     protected void needResetData() {
-
+        nodeList = new ArrayList<>();
     }
 
     @Override
@@ -111,15 +111,13 @@ public class InstagramActivity extends QcBaseLifeActivity {
         viewBinding.btnYoutube.setOnClickListener(new OnSingleClickListener() {
             @Override
             public void onSingleClick(View v) {
-
+                QcUtil.hiddenSoftKey(qCon, viewBinding.editText);
+                viewBinding.llProgressBar.setVisibility(View.VISIBLE);
                 if (!"".equals(viewBinding.editText.getText().toString())) {
-
                     new InstagramJsoupAsyncTask(viewBinding.editText.getText().toString()).execute();
 //                new JsoupAsyncTask().execute();
 //                new NaverJsoupAsyncTask().execute();
                 }
-
-
             }
         });
     }
@@ -136,7 +134,90 @@ public class InstagramActivity extends QcBaseLifeActivity {
 
     @Override
     protected void needOnShowToUser() {
+        viewBinding.llProgressBar.setVisibility(View.GONE);
+    }
 
+    /**
+     * https://try.jsoup.org/
+     * http://lidron.tistory.com/19
+     * http://someoneofsunrin.tistory.com/42
+     * <p>
+     * https://stackoverflow.com/questions/33707679/how-to-get-this-script-from-html-with-jsoup-in-android-programming
+     */
+    private class InstagramJsoupAsyncTask extends AsyncTask<Void, Void, Void> {
+
+        // https://www.instagram.com/explore/tags/을지로/?__a=1%22;
+        private String INSTAGRAM_URL_01 = "https://www.instagram.com/explore/tags/";
+        private String INSTAGRAM_URL_02 = "/?__a=1%22;";
+
+        private String sharedData = "";
+        private String keyword = "";
+
+        public InstagramJsoupAsyncTask(String keyword) {
+            this.keyword = keyword;
+            nodeList = new ArrayList<>();
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            QcLog.e("doInBackground ===== " + keyword);
+            try {
+                sharedData = "";
+                Document doc = Jsoup.connect(INSTAGRAM_URL_01 + keyword + INSTAGRAM_URL_02)
+                        .timeout(Define.JSOUP_TIMEOUT).get();
+
+                QcLog.e("=================================================");
+
+                Elements scriptElements = doc.getElementsByTag("script");
+                for (Element element : scriptElements) {
+                    for (DataNode node : element.dataNodes()) {
+                        if (node.getWholeData().startsWith("window._sharedData = {\"config\":")) {
+                            QcLog.e("DataNode == " + node.getWholeData().toString());
+                            sharedData += node.getWholeData();
+                            break;
+                        }
+                    }
+                }
+
+                sharedData = sharedData.trim();
+                sharedData = sharedData.replaceAll("window._sharedData = ", "");
+                sharedData = sharedData.replaceAll(";", "");
+                htmlContentInStringFormat = sharedData;
+                QcLog.e("sharedData == " + sharedData);
+
+                SharedData resultStr = QcGsonUtil.getInstance(qCon).getStringToJson(sharedData, SharedData.class);
+                QcLog.e("QcGsonUtil SharedData  ================ " + resultStr.toString());
+                Hashtag mHashtag = resultStr.getEntryData().getTagPage().get(0).getGraphql().getHashtag();
+
+                EdgeHashtagToMedia mEdgeHashtagToMedia = mHashtag.getEdgeHashtagToMedia();
+                List<Edge> edges = mEdgeHashtagToMedia.getEdges();
+                for (int i = 0; i < edges.size(); i++) {
+                    Node node = edges.get(i).getNode();
+                    nodeList.add(node);
+                    QcLog.e("태그명으로 검색 == " + node.getId() + " == " + node.getDisplayUrl());
+                }
+
+
+                EdgeHashtagToTopPosts mEdgeHashtagToTopPosts = mHashtag.getEdgeHashtagToTopPosts();
+                List<Edge__> edgesTopPosts = mEdgeHashtagToTopPosts.getEdges();
+
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            adapter.addAll(nodeList);
+            viewBinding.llProgressBar.setVisibility(View.GONE);
+        }
     }
 
 
@@ -156,7 +237,7 @@ public class InstagramActivity extends QcBaseLifeActivity {
         protected Void doInBackground(Void... params) {
             try {
 
-                Document doc = Jsoup.connect(htmlPageUrl).get();
+                Document doc = Jsoup.connect(htmlPageUrl).timeout(Define.JSOUP_TIMEOUT).get();
 
                 //테스트1
                 Elements titles = doc.select("div.news-con h1.tit-news");
@@ -207,6 +288,7 @@ public class InstagramActivity extends QcBaseLifeActivity {
         Document doc;
         Elements contents;
         String Top10;
+        private String htmlPageUrl = "https://www.naver.com/"; //파싱할 홈페이지의 URL주소
 
         @Override
         protected void onPreExecute() {
@@ -216,7 +298,7 @@ public class InstagramActivity extends QcBaseLifeActivity {
         @Override
         protected Void doInBackground(Void... params) {
             try {
-                doc = Jsoup.connect("https://www.naver.com/").get(); //naver페이지를 불러옴
+                doc = Jsoup.connect(htmlPageUrl).timeout(Define.JSOUP_TIMEOUT).get(); //naver페이지를 불러옴
                 contents = doc.select("span.ah_k");//셀렉터로 span태그중 class값이 ah_k인 내용을 가져옴
             } catch (IOException e) {
                 e.printStackTrace();
@@ -239,87 +321,4 @@ public class InstagramActivity extends QcBaseLifeActivity {
     }
 
 
-    /**
-     * https://try.jsoup.org/
-     * http://lidron.tistory.com/19
-     * http://someoneofsunrin.tistory.com/42
-     * <p>
-     * https://stackoverflow.com/questions/33707679/how-to-get-this-script-from-html-with-jsoup-in-android-programming
-     */
-    private class InstagramJsoupAsyncTask extends AsyncTask<Void, Void, Void> {
-
-        // https://www.instagram.com/explore/tags/을지로/?__a=1%22;
-        private String INSTAGRAM_URL_01 = "https://www.instagram.com/explore/tags/";
-        private String INSTAGRAM_URL_02 = "/?__a=1%22;";
-
-
-        private String sharedData = "";
-        private String keyword = "";
-
-
-        public InstagramJsoupAsyncTask(String keyword) {
-            this.keyword = keyword;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            try {
-                sharedData = "";
-//                Document doc = Jsoup.connect(INSTAGRAM_URL).get();
-                Document doc = Jsoup.connect(INSTAGRAM_URL_01 + keyword + INSTAGRAM_URL_02).get();
-
-
-                QcLog.e("=================================================");
-
-                Elements scriptElements = doc.getElementsByTag("script");
-                for (Element element : scriptElements) {
-                    for (DataNode node : element.dataNodes()) {
-                        if (node.getWholeData().startsWith("window._sharedData")) {
-                            QcLog.e("DataNode == " + node.getWholeData().toString());
-                            sharedData += node.getWholeData();
-                            break;
-                        }
-                    }
-                    QcLog.e("-------------------");
-                }
-
-
-                sharedData = sharedData.trim();
-                sharedData = sharedData.replaceAll("window._sharedData = ", "");
-                sharedData = sharedData.replaceAll(";", "");
-                htmlContentInStringFormat = sharedData;
-                QcLog.e("sharedData == " + sharedData);
-
-                SharedData resultStr = QcGsonUtil.getInstance(qCon).getStringToJson(sharedData, SharedData.class);
-                QcLog.e("QcGsonUtil SharedData  ================ " + resultStr.toString());
-                Hashtag mHashtag = resultStr.getEntryData().getTagPage().get(0).getGraphql().getHashtag();
-
-                EdgeHashtagToMedia mEdgeHashtagToMedia = mHashtag.getEdgeHashtagToMedia();
-                List<Edge> edges = mEdgeHashtagToMedia.getEdges();
-                for (int i = 0; i < edges.size(); i++) {
-                    Node node = edges.get(i).getNode();
-                    QcLog.e("태그명으로 검색 == " + node.getId() + " == " + node.getDisplayUrl());
-                }
-
-
-                EdgeHashtagToTopPosts mEdgeHashtagToTopPosts = mHashtag.getEdgeHashtagToTopPosts();
-                List<Edge__> edgesTopPosts = mEdgeHashtagToTopPosts.getEdges();
-
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-            viewBinding.txtResult.setText(htmlContentInStringFormat);
-        }
-    }
 }

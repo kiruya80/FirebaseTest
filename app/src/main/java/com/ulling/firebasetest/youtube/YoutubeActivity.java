@@ -29,6 +29,7 @@ import com.ulling.firebasetest.view.adapter.YoutubeAdapter;
 import com.ulling.lib.core.listener.OnSingleClickListener;
 import com.ulling.lib.core.ui.QcBaseLifeActivity;
 import com.ulling.lib.core.util.QcLog;
+import com.ulling.lib.core.util.QcUtil;
 
 import java.util.List;
 
@@ -37,7 +38,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class YoutubeActivity extends QcBaseLifeActivity {
-    private static final String DEVELOPER_KEY = "AIzaSyC_fxY1zxobTycOfblJ6i2wNBQzDBkxCVA";
 
     private QUllingApplication qApp;
     private ActivityYoutubeBinding viewBinding;
@@ -105,6 +105,8 @@ public class YoutubeActivity extends QcBaseLifeActivity {
             public void onSingleClick(View v) {
                 result = "";
                 viewBinding.txtResult.setText(result);
+                QcUtil.hiddenSoftKey(qCon, viewBinding.editText);
+                viewBinding.llProgressBar.setVisibility(View.VISIBLE);
 
                 getSearchList("snippet",
                         latitude + "," + longitude,
@@ -130,16 +132,8 @@ public class YoutubeActivity extends QcBaseLifeActivity {
 
     @Override
     protected void needOnShowToUser() {
-
+        viewBinding.llProgressBar.setVisibility(View.GONE);
     }
-
-//    @Override
-//    protected void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_youtube);
-//
-//    }
-
 
     public void getSearchList(String part,
                               String location,
@@ -177,6 +171,7 @@ public class YoutubeActivity extends QcBaseLifeActivity {
                             public void run() {
 //                            viewBinding.txtResult.setText(result);
                                 adapter.addAll(items);
+                                viewBinding.llProgressBar.setVisibility(View.GONE);
                             }
                         });
                     }
