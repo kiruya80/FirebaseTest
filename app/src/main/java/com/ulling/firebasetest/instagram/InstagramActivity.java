@@ -288,7 +288,7 @@ public class InstagramActivity extends QcBaseLifeActivity {
 
         @Override
         protected void onPostExecute(Void result) {
-            viewBinding.txtResult.setText(htmlContentInStringFormat);
+//            viewBinding.txtResult.setText(htmlContentInStringFormat);
         }
     }
 }
