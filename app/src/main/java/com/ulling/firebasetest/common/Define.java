@@ -31,4 +31,21 @@ public class Define extends QcDefine {
     public static final int JSOUP_TIMEOUT = 30000;
 
     public static final String KEYWORD = "KEYWORD";
+    public static final String YOUTUBE = "https://www.googleapis.com/auth/youtube";
+
+    /** See, edit, and permanently delete your YouTube videos, ratings, comments and captions. */
+    public static final String YOUTUBE_FORCE_SSL = "https://www.googleapis.com/auth/youtube.force-ssl";
+
+    /** View your YouTube account. */
+    public static final String YOUTUBE_READONLY = "https://www.googleapis.com/auth/youtube.readonly";
+
+    /** Manage your YouTube videos. */
+    public static final String YOUTUBE_UPLOAD = "https://www.googleapis.com/auth/youtube.upload";
+
+    /** View and manage your assets and associated content on YouTube. */
+    public static final String YOUTUBEPARTNER = "https://www.googleapis.com/auth/youtubepartner";
+
+    /** View private information of your YouTube channel relevant during the audit process with a YouTube partner. */
+    public static final String YOUTUBEPARTNER_CHANNEL_AUDIT = "https://www.googleapis.com/auth/youtubepartner-channel-audit";
+
 }

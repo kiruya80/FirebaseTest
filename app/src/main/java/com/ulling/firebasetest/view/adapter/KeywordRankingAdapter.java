@@ -56,11 +56,12 @@ public class KeywordRankingAdapter extends QcRecyclerBaseAdapter<KeywordRanking>
                 KeywordRanking selectecItem = (KeywordRanking) needItemFromPosition(position_);
                 QcLog.e("CLick ==== " + selectecItem.toString());
                 QcToast.getInstance().show(selectecItem.toString(), false);
-                if (position_ % 2 == 0) {
-                    MoveActivityUtils.moveYoutubeActivity(qQcBaseLifeActivity, selectecItem.getKeyword());
-                } else {
-                    MoveActivityUtils.moveInstagramActivity(qQcBaseLifeActivity, selectecItem.getKeyword());
-                }
+//                if (position_ % 2 == 0) {
+//                    MoveActivityUtils.moveYoutubeActivity(qQcBaseLifeActivity, selectecItem.getKeyword());
+//                } else {
+//                    MoveActivityUtils.moveInstagramActivity(qQcBaseLifeActivity, selectecItem.getKeyword());
+//                }
+                MoveActivityUtils.moveYoutubeActivity(qQcBaseLifeActivity, selectecItem.getKeyword());
             }
         });
     }

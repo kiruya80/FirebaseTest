@@ -14,6 +14,10 @@
 
 package com.ulling.firebasetest.auth;
 
+import com.google.android.gms.auth.GoogleAuthException;
+import com.google.android.gms.auth.GoogleAuthUtil;
+import com.google.android.gms.auth.GooglePlayServicesAvailabilityException;
+import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -44,9 +48,12 @@ import android.widget.Toast;
 
 import com.ulling.firebasetest.BaseActivity;
 import com.ulling.firebasetest.R;
+import com.ulling.firebasetest.asyncTask.GoogleAuthTask;
 import com.ulling.firebasetest.entity.Provider;
 import com.ulling.firebasetest.entity.User;
+import com.ulling.lib.core.util.QcLog;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -298,6 +305,23 @@ public class GoogleSignInActivity extends BaseActivity implements
         showProgressDialog();
         // [END_EXCLUDE]
 
+        new GoogleAuthTask(GoogleSignInActivity.this, acct.getAccount(),
+                new GoogleAuthTask.GoogleAuthListener() {
+                    @Override
+                    public void onComplete(String authtoken_) {
+
+                    }
+
+                    @Override
+                    public void onGooglePlayServicesAvailabilityException(GooglePlayServicesAvailabilityException playEx) {
+
+                    }
+
+                    @Override
+                    public void onUserRecoverableAuthException(UserRecoverableAuthException userAuthEx) {
+
+                    }
+                }).execute();
         credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
 
         if (mFirebaseAuth.getCurrentUser() != null) {
